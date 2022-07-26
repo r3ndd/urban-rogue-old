@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	// "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type View func(*ebiten.Image) error
@@ -16,7 +16,7 @@ func AddView(name string, view View) {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, world!")
+	// ebitenutil.DebugPrint(screen, "Hello, world!")
 
 	for _, view := range views {
 		err := view(screen)
