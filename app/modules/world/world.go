@@ -1,27 +1,17 @@
 package world
 
 import (
-	"github.com/r3ndd/urban-rogue/app/engine"
+	"github.com/r3ndd/urban-rogue/app/modules/entity"
 )
-
-type WorldTile struct {
-	PassiveEntity *engine.Entity
-	ActiveEntity  *engine.Entity
-	WorldX        int
-	WorldY        int
-}
 
 const worldSize = 100
 
-var tiles = [worldSize][worldSize]WorldTile{}
+var Tiles = [worldSize][worldSize]entity.Entity{}
 
 func init() {
-	for y := 0; y < worldSize; y++ {
-		for x := 0; x < worldSize; x++ {
-			tiles[y][x] = WorldTile{
-				WorldX: x,
-				WorldY: y,
-			}
-		}
-	}
+	// for y := 0; y < worldSize; y++ {
+	// 	for x := 0; x < worldSize; x++ {
+	// 		tiles[y][x] = entity.Entity{}
+	// 	}
+	// }
 }
