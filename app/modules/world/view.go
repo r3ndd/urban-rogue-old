@@ -12,7 +12,7 @@ import (
 )
 
 const fontName string = "agave"
-const baseGridSize int = 100
+const baseGridSize int = 80
 const bottomMargin int = 32
 
 var fontFace font.Face
@@ -43,14 +43,21 @@ func view(screen *ebiten.Image) error {
 	for gridY := 0; gridY < gridSize; gridY++ {
 		for gridX := 0; gridX < gridSize; gridX++ {
 			var tileRune rune
+			var typeId entity.TypeId
 
 			if len(viewTiles) > gridY && len(viewTiles[gridY]) > gridX {
 				_entity := viewTiles[gridY][gridX]
-				tileRune = entity.Runes[_entity.TypeId]
+
+				if _entity.ActiveTypeId != 0 {
+					typeId = _entity.ActiveTypeId
+				} else {
+					typeId = _entity.PassiveTypeId
+				}
 			} else {
-				tileRune = entity.Runes[0]
+				typeId = 0
 			}
 
+			tileRune = entity.Runes[typeId]
 			x := gridX*tileSize + sideMargin
 			y := gridY * tileSize
 			text.Draw(screen, string(tileRune), fontFace, x, y, color.White)

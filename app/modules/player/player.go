@@ -1,14 +1,15 @@
 package player
 
-type Player struct {
-	x int
-	y int
+import (
+	"reflect"
+
+	"github.com/r3ndd/urban-rogue/app/modules/entity"
+)
+
+type PlayerState struct {
+	entity.EntityState
 }
 
-func (p *Player) GetPos() (int, int) {
-	return p.x, p.y
-}
-
-func (p *Player) SetPos(x, y int) bool {
-
+func init() {
+	entity.RegisterEntityType("Yourself", "", '@', reflect.TypeOf(PlayerState{}))
 }
