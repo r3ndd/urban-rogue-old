@@ -6,13 +6,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/r3ndd/urban-rogue/app/engine"
-	"github.com/r3ndd/urban-rogue/app/modules/entity"
+	"github.com/r3ndd/urban-rogue/app/engine/entity"
 	"github.com/r3ndd/urban-rogue/app/utils"
 	"golang.org/x/image/font"
 )
 
 const fontName string = "agave"
-const baseGridSize int = 80
+const baseGridSize int = 60
+const topMargin int = 16
 const bottomMargin int = 32
 
 var fontFace font.Face
@@ -26,7 +27,7 @@ func init() {
 
 func view(screen *ebiten.Image) error {
 	screenWidth, screenHeight := screen.Size()
-	viewSize := screenHeight - bottomMargin
+	viewSize := screenHeight - topMargin - bottomMargin
 	sideMargin := (screenWidth - viewSize) / 2
 	gridSize := baseGridSize
 	tileSize := viewSize / gridSize
@@ -59,7 +60,7 @@ func view(screen *ebiten.Image) error {
 
 			tileRune = entity.Runes[typeId]
 			x := gridX*tileSize + sideMargin
-			y := gridY * tileSize
+			y := gridY*tileSize + topMargin
 			text.Draw(screen, string(tileRune), fontFace, x, y, color.White)
 		}
 	}

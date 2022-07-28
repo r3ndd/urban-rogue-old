@@ -5,9 +5,8 @@ import (
 	"github.com/r3ndd/urban-rogue/app/engine"
 
 	_ "github.com/r3ndd/urban-rogue/app/modules/actor"
-	_ "github.com/r3ndd/urban-rogue/app/modules/entity"
-	_ "github.com/r3ndd/urban-rogue/app/modules/player"
-	_ "github.com/r3ndd/urban-rogue/app/modules/world"
+	"github.com/r3ndd/urban-rogue/app/modules/player"
+	"github.com/r3ndd/urban-rogue/app/modules/world"
 )
 
 func main() {
@@ -15,5 +14,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.MaximizeWindow()
 
+	world.Generate()
+	player.Spawn()
 	engine.Run()
 }
