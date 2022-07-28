@@ -1,5 +1,13 @@
 package entity
 
+type EntityClass int
+
+const (
+	Passive EntityClass = 0
+	Active              = 1
+	Hybrid              = 2
+)
+
 var numEntities = 0
 var Runes = map[TypeId]rune{
 	0: '.',
@@ -11,24 +19,58 @@ var Descs = map[TypeId]string{
 	0: "",
 }
 
-var Actives = map[TypeId]bool{}
-var EntityTypeAbilities = map[TypeId][]string{}
+var Classes = map[TypeId]EntityClass{}
+var InitStates = map[TypeId]EntityStateBase{}
 
-func RegisterEntityType(name, desc string, rune rune, active bool, abilities []string) TypeId {
+func RegisterEntityType(
+	name, desc string,
+	rune rune,
+	class EntityClass,
+	initState EntityStateBase,
+	selfActions []struct {
+		ActionId
+		SelfAction
+	},
+	targetActions []struct {
+		ActionId
+		TargetAction
+	},
+	reactions []struct {
+		ActionId
+		Reaction
+	},
+) TypeId {
 	numEntities++
 	typeId := TypeId(numEntities)
 
 	RegisterRune(typeId, rune)
 	RegisterName(typeId, name)
 	RegisterDesc(typeId, desc)
-	RegisterActive(typeId, active)
+	RegisterClass(typeId, class)
+	RegisterInitState(typeId, initState)
 
-	if _, exists := EntityTypeAbilities[typeId]; !exists {
-		EntityTypeAbilities[typeId] = []string{}
+	if _, exists := EntitySelfActions[typeId]; !exists {
+		EntitySelfActions[typeId] = map[ActionId]SelfAction{}
 	}
 
-	for _, abilityName := range abilities {
-		EntityTypeAbilities[typeId] = append(EntityTypeAbilities[typeId], abilityName)
+	if _, exists := EntityTargetActions[typeId]; !exists {
+		EntityTargetActions[typeId] = map[ActionId]TargetAction{}
+	}
+
+	if _, exists := EntityReactions[typeId]; !exists {
+		EntityReactions[typeId] = map[ActionId]Reaction{}
+	}
+
+	for _, data := range selfActions {
+		EntitySelfActions[typeId][data.ActionId] = data.SelfAction
+	}
+
+	for _, data := range targetActions {
+		EntityTargetActions[typeId][data.ActionId] = data.TargetAction
+	}
+
+	for _, data := range reactions {
+		EntityReactions[typeId][data.ActionId] = data.Reaction
 	}
 
 	return typeId
@@ -46,6 +88,10 @@ func RegisterDesc(id TypeId, desc string) {
 	Descs[id] = desc
 }
 
-func RegisterActive(id TypeId, active bool) {
-	Actives[id] = active
+func RegisterClass(id TypeId, class EntityClass) {
+	Classes[id] = class
+}
+
+func RegisterInitState(id TypeId, initState EntityStateBase) {
+	InitStates[id] = initState
 }

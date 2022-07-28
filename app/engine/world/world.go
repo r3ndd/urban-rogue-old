@@ -22,47 +22,46 @@ func init() {
 	fmt.Println(unsafe.Sizeof(EntityTile{}))
 }
 
-func CreateEntity(typeId entity.TypeId, initState entity.EntityStateBase, x, y int) bool {
-	active, exists := entity.Actives[typeId]
+func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
+	class, exists := entity.Classes[typeId]
 
 	if !exists {
 		log.Fatal("Attempted to create unregistered entity")
 	}
 
 	if x < 0 || y < 0 || x >= worldSize || y >= worldSize {
-		return false
+		return entity.InstanceId{}, false
 	}
 
 	tile := &Tiles[y][x]
 
-	if active {
+	if class != entity.Passive {
 		if tile.ActiveTypeId != 0 {
-			return false
+			return entity.InstanceId{}, false
 		}
 
-		if initState != nil {
-			initState.SetTypeId(typeId)
-			initState.SetPos(x, y)
-		}
-
-		id := entity.GetNextEntityInstanceId()
 		tile.ActiveTypeId = typeId
-		tile.ActiveInstanceId = id
-		entity.EntityStates[id] = initState
+
+		if class == entity.Active {
+			id := entity.RegisterEntityInstance(typeId, x, y)
+			tile.ActiveInstanceId = id
+			return id, true
+		}
+
+		return entity.InstanceId{}, true
 	} else {
 		if tile.PassiveTypeId != 0 {
-			return false
+			return entity.InstanceId{}, false
 		}
 
 		tile.PassiveTypeId = typeId
+		return entity.InstanceId{}, true
 	}
-
-	return true
 }
 
-func DestroyEntityAt(x, y int, active bool) bool {
+func DestroyEntityAt(x, y int, active bool) {
 	if x < 0 || y < 0 || x >= worldSize || y >= worldSize {
-		return false
+		return
 	}
 
 	tile := &Tiles[y][x]
@@ -70,8 +69,8 @@ func DestroyEntityAt(x, y int, active bool) bool {
 	if active {
 		id := tile.ActiveInstanceId
 
-		if _, exists := entity.EntityStates[id]; exists {
-			delete(entity.EntityStates, id)
+		if _, exists := entity.GetEntityState(id); exists {
+			entity.DeleteEntityInstance(id)
 		}
 
 		tile.ActiveTypeId = 0
@@ -79,38 +78,30 @@ func DestroyEntityAt(x, y int, active bool) bool {
 	} else {
 		tile.PassiveTypeId = 0
 	}
-
-	return true
 }
 
-func DestroyActiveEntity(id entity.InstanceId) bool {
-	state, exists := entity.EntityStates[id]
+func DestroyActiveEntity(id entity.InstanceId) {
+	state, exists := entity.GetEntityState(id)
 
 	if !exists {
-		return false
-	}
-
-	if state == nil {
-		log.Fatal("Active entities without state must be destroyed by position")
+		return
 	}
 
 	x, y := state.GetPos()
 	tile := &Tiles[y][x]
 
-	delete(entity.EntityStates, id)
+	entity.DeleteEntityInstance(id)
 	tile.ActiveTypeId = 0
 	tile.ActiveInstanceId = [4]byte{}
-
-	return true
 }
 
 func GetPassiveEntityAt(x, y int) entity.TypeId {
 	return Tiles[y][x].PassiveTypeId
 }
 
-func GetActiveEntityAt(x, y int) *entity.EntityInfo {
+func GetActiveEntityAt(x, y int) (*entity.EntityInfo, bool) {
 	tile := Tiles[y][x]
-	state := entity.EntityStates[tile.ActiveInstanceId]
+	state, exists := entity.GetEntityState(tile.ActiveInstanceId)
 	entity := entity.EntityInfo{
 		TypeId: tile.ActiveTypeId,
 		X:      x,
@@ -118,7 +109,7 @@ func GetActiveEntityAt(x, y int) *entity.EntityInfo {
 		State:  state,
 	}
 
-	return &entity
+	return &entity, exists
 }
 
 func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
@@ -134,7 +125,7 @@ func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
 			return false
 		}
 
-		state := entity.EntityStates[fromTile.ActiveInstanceId]
+		state, _ := entity.GetEntityState(fromTile.ActiveInstanceId)
 
 		if state != nil {
 			state.SetPos(toX, toY)
