@@ -35,48 +35,44 @@ func Spawn() {
 
 	turn.RegisterActor(playerId, OnTurn, AfterTurn)
 
-	engine.AddKeyboardListener(ebiten.KeyH, "keydown", func() error {
+	engine.AddKeyboardListener(ebiten.KeyH, "keydown", func() {
 		if !isTurn {
-			return nil
+			return
 		}
 
 		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
 			actor.ActSelf(playerId, "move_self", "left")
 		})
-		return nil
 	})
 
-	engine.AddKeyboardListener(ebiten.KeyL, "keydown", func() error {
+	engine.AddKeyboardListener(ebiten.KeyL, "keydown", func() {
 		if !isTurn {
-			return nil
+			return
 		}
 
 		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
 			actor.ActSelf(playerId, "move_self", "right")
 		})
-		return nil
 	})
 
-	engine.AddKeyboardListener(ebiten.KeyK, "keydown", func() error {
+	engine.AddKeyboardListener(ebiten.KeyK, "keydown", func() {
 		if !isTurn {
-			return nil
+			return
 		}
 
 		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
 			actor.ActSelf(playerId, "move_self", "up")
 		})
-		return nil
 	})
 
-	engine.AddKeyboardListener(ebiten.KeyJ, "keydown", func() error {
+	engine.AddKeyboardListener(ebiten.KeyJ, "keydown", func() {
 		if !isTurn {
-			return nil
+			return
 		}
 
 		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
 			actor.ActSelf(playerId, "move_self", "down")
 		})
-		return nil
 	})
 }
 

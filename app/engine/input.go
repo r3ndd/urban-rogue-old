@@ -10,18 +10,18 @@ type InputType int
 type KeyboardHandler struct {
 	Key   ebiten.Key
 	Phase string
-	Run   func() error
+	Run   func()
 }
 
 type MouseButtonHandler struct {
 	Button ebiten.MouseButton
 	Phase  string
-	Run    func() error
+	Run    func()
 }
 
 type MouseScrollHandler struct {
 	Phase string
-	Run   func() error
+	Run   func()
 }
 
 const (
@@ -34,7 +34,7 @@ var keyboardHandlers = map[ebiten.Key]map[string][]KeyboardHandler{}
 var mouseButtonHandlers = map[ebiten.MouseButton]map[string][]MouseButtonHandler{}
 var mouseScrollHandlers = map[string][]MouseScrollHandler{}
 
-func AddKeyboardListener(key ebiten.Key, phase string, run func() error) {
+func AddKeyboardListener(key ebiten.Key, phase string, run func()) {
 	handler := KeyboardHandler{
 		Key:   key,
 		Phase: phase,
@@ -50,7 +50,7 @@ func AddKeyboardListener(key ebiten.Key, phase string, run func() error) {
 	keyboardHandlers[key][phase] = append(keyboardHandlers[key][phase], handler)
 }
 
-func AddMouseButtonListener(button ebiten.MouseButton, phase string, run func() error) {
+func AddMouseButtonListener(button ebiten.MouseButton, phase string, run func()) {
 	handler := MouseButtonHandler{
 		Button: button,
 		Phase:  phase,
@@ -66,7 +66,7 @@ func AddMouseButtonListener(button ebiten.MouseButton, phase string, run func() 
 	mouseButtonHandlers[button][phase] = append(mouseButtonHandlers[button][phase], handler)
 }
 
-func AddMouseScrollListener(phase string, run func() error) {
+func AddMouseScrollListener(phase string, run func()) {
 	handler := MouseScrollHandler{
 		Phase: phase,
 		Run:   run,
@@ -82,30 +82,18 @@ func handleInput() error {
 		}
 
 		for _, handler := range handlersMap["keypressed"] {
-			err := handler.Run()
-
-			if err != nil {
-				return err
-			}
+			handler.Run()
 		}
 
 		if inpututil.IsKeyJustPressed(key) {
 			for _, handler := range handlersMap["keydown"] {
-				err := handler.Run()
-
-				if err != nil {
-					return err
-				}
+				handler.Run()
 			}
 		}
 
 		if inpututil.IsKeyJustReleased(key) {
 			for _, handler := range handlersMap["keyup"] {
-				err := handler.Run()
-
-				if err != nil {
-					return err
-				}
+				handler.Run()
 			}
 		}
 	}

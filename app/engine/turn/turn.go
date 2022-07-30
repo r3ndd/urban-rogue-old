@@ -8,6 +8,9 @@ import (
 
 const TurnCap = 128
 
+var TurnEntity entity.InstanceId
+var TurnCount int
+
 var turnCaps = map[entity.InstanceId]int{}
 var onTurns = map[entity.InstanceId]func(){}
 var afterTurns = map[entity.InstanceId]func(){}
@@ -32,6 +35,8 @@ func Begin() {
 	for {
 		// Iterate through current actors
 		for id, onTurn := range onTurns {
+			TurnEntity = id
+			TurnCount++
 			queueMu.Lock()
 
 			// Check if action is queued
@@ -73,6 +78,10 @@ func Begin() {
 }
 
 func ConsumeTurn(id entity.InstanceId, duration int, action func()) {
+	if TurnEntity != id {
+		return
+	}
+
 	capMu.Lock()
 	_, exists := turnCaps[id]
 

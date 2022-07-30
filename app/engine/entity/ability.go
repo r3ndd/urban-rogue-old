@@ -1,8 +1,8 @@
 package entity
 
 type ActionId string
-type SelfAction func(self InstanceId, args ...interface{})
-type TargetAction func(self InstanceId, target InstanceId, args ...interface{})
+type SelfAction func(self InstanceId, args ...interface{}) bool
+type TargetAction func(self InstanceId, target InstanceId, args ...interface{}) bool
 type Reaction func(self InstanceId, actor InstanceId, args ...interface{})
 
 var EntitySelfActions = map[TypeId]map[ActionId]SelfAction{}

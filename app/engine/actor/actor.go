@@ -6,42 +6,42 @@ import (
 )
 
 // Self is active (not hybrid)
-func ActSelf(self entity.InstanceId, actionId entity.ActionId, args ...interface{}) {
+func ActSelf(self entity.InstanceId, actionId entity.ActionId, args ...interface{}) bool {
 	state, exists := entity.GetEntityState(self)
 
 	if !exists {
-		return
+		return false
 	}
 
 	typeId := state.GetTypeId()
 	action, exists := entity.EntitySelfActions[typeId][actionId]
 
 	if !exists {
-		return
+		return false
 	}
 
-	action(self, args...)
+	return action(self, args...)
 }
 
 // Self is active (not hybrid), target is active or hybrid
-func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.ActionId, args ...interface{}) {
+func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.ActionId, args ...interface{}) bool {
 	state, exists := entity.GetEntityState(self)
 
 	if !exists {
-		return
+		return false
 	}
 
 	typeId := state.GetTypeId()
 	action, exists := entity.EntityTargetActions[typeId][actionId]
 
 	if !exists {
-		return
+		return false
 	}
 
 	targetTile := world.Tiles[targetY][targetX]
 
 	if targetTile.ActiveTypeId == 0 {
-		return
+		return false
 	}
 
 	_, exists = entity.GetEntityState(targetTile.ActiveInstanceId)
@@ -51,8 +51,10 @@ func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.Act
 	}
 
 	target := targetTile.ActiveInstanceId
-	action(self, target, args...)
+	res := action(self, target, args...)
 	react(target, self, actionId, args...)
+
+	return res
 }
 
 // Self is active or hybrid

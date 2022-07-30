@@ -48,30 +48,9 @@ func RegisterEntityType(
 	RegisterDesc(typeId, desc)
 	RegisterClass(typeId, class)
 	RegisterInitState(typeId, initState)
-
-	if _, exists := EntitySelfActions[typeId]; !exists {
-		EntitySelfActions[typeId] = map[ActionId]SelfAction{}
-	}
-
-	if _, exists := EntityTargetActions[typeId]; !exists {
-		EntityTargetActions[typeId] = map[ActionId]TargetAction{}
-	}
-
-	if _, exists := EntityReactions[typeId]; !exists {
-		EntityReactions[typeId] = map[ActionId]Reaction{}
-	}
-
-	for _, data := range selfActions {
-		EntitySelfActions[typeId][data.ActionId] = data.SelfAction
-	}
-
-	for _, data := range targetActions {
-		EntityTargetActions[typeId][data.ActionId] = data.TargetAction
-	}
-
-	for _, data := range reactions {
-		EntityReactions[typeId][data.ActionId] = data.Reaction
-	}
+	RegisterSelfActions(typeId, selfActions)
+	RegisterTargetActions(typeId, targetActions)
+	RegisterReactions(typeId, reactions)
 
 	return typeId
 }
@@ -94,4 +73,43 @@ func RegisterClass(id TypeId, class EntityClass) {
 
 func RegisterInitState(id TypeId, initState EntityStateBase) {
 	InitStates[id] = initState
+}
+
+func RegisterSelfActions(id TypeId, selfActions []struct {
+	ActionId
+	SelfAction
+}) {
+	if _, exists := EntitySelfActions[id]; !exists {
+		EntitySelfActions[id] = map[ActionId]SelfAction{}
+	}
+
+	for _, data := range selfActions {
+		EntitySelfActions[id][data.ActionId] = data.SelfAction
+	}
+}
+
+func RegisterTargetActions(id TypeId, targetActions []struct {
+	ActionId
+	TargetAction
+}) {
+	if _, exists := EntityTargetActions[id]; !exists {
+		EntityTargetActions[id] = map[ActionId]TargetAction{}
+	}
+
+	for _, data := range targetActions {
+		EntityTargetActions[id][data.ActionId] = data.TargetAction
+	}
+}
+
+func RegisterReactions(id TypeId, reactions []struct {
+	ActionId
+	Reaction
+}) {
+	if _, exists := EntityReactions[id]; !exists {
+		EntityReactions[id] = map[ActionId]Reaction{}
+	}
+
+	for _, data := range reactions {
+		EntityReactions[id][data.ActionId] = data.Reaction
+	}
 }

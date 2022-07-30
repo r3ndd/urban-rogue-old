@@ -5,11 +5,11 @@ import (
 	"github.com/r3ndd/urban-rogue/app/engine/world"
 )
 
-func MoveSelf(self entity.InstanceId, args ...interface{}) {
+func MoveSelf(self entity.InstanceId, args ...interface{}) bool {
 	state, exists := entity.GetEntityState(self)
 
 	if !exists || state == nil {
-		return
+		return false
 	}
 
 	x, y := state.GetPos()
@@ -17,28 +17,30 @@ func MoveSelf(self entity.InstanceId, args ...interface{}) {
 
 	switch dir {
 	case "left":
-		MoveLeft(x, y)
+		return MoveLeft(x, y)
 	case "right":
-		MoveRight(x, y)
+		return MoveRight(x, y)
 	case "up":
-		MoveUp(x, y)
+		return MoveUp(x, y)
 	case "down":
-		MoveDown(x, y)
+		return MoveDown(x, y)
+	default:
+		return false
 	}
 }
 
-func MoveLeft(x, y int) {
-	world.MoveEntity(x, y, x-1, y, true)
+func MoveLeft(x, y int) bool {
+	return world.MoveEntity(x, y, x-1, y, true)
 }
 
-func MoveRight(x, y int) {
-	world.MoveEntity(x, y, x+1, y, true)
+func MoveRight(x, y int) bool {
+	return world.MoveEntity(x, y, x+1, y, true)
 }
 
-func MoveUp(x, y int) {
-	world.MoveEntity(x, y, x, y-1, true)
+func MoveUp(x, y int) bool {
+	return world.MoveEntity(x, y, x, y-1, true)
 }
 
-func MoveDown(x, y int) {
-	world.MoveEntity(x, y, x, y+1, true)
+func MoveDown(x, y int) bool {
+	return world.MoveEntity(x, y, x, y+1, true)
 }
