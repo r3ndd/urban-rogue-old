@@ -1,25 +1,28 @@
 package world
 
 import (
-	"fmt"
+	// "fmt"
 	"log"
-	"unsafe"
+	// "unsafe"
 
 	"github.com/r3ndd/urban-rogue/app/engine/entity"
 )
 
+// 8 bytes
 type EntityTile struct {
 	PassiveTypeId    entity.TypeId
 	ActiveTypeId     entity.TypeId
 	ActiveInstanceId entity.InstanceId
 }
+type WorldTiles [WorldSize][WorldSize]EntityTile
 
-const worldSize = 100
+const WorldSize = 100
 
-var Tiles = [worldSize][worldSize]EntityTile{}
+var Tiles = WorldTiles{}
+var Generator func()
 
 func init() {
-	fmt.Println(unsafe.Sizeof(EntityTile{}))
+	// fmt.Println(unsafe.Sizeof(EntityTile{}))
 }
 
 func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
@@ -29,7 +32,7 @@ func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
 		log.Fatal("Attempted to create unregistered entity")
 	}
 
-	if x < 0 || y < 0 || x >= worldSize || y >= worldSize {
+	if x < 0 || y < 0 || x >= WorldSize || y >= WorldSize {
 		return entity.InstanceId{}, false
 	}
 
@@ -60,7 +63,7 @@ func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
 }
 
 func DestroyEntityAt(x, y int, active bool) {
-	if x < 0 || y < 0 || x >= worldSize || y >= worldSize {
+	if x < 0 || y < 0 || x >= WorldSize || y >= WorldSize {
 		return
 	}
 
@@ -113,7 +116,7 @@ func GetActiveEntityAt(x, y int) (*entity.EntityInfo, bool) {
 }
 
 func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
-	if toX < 0 || toY < 0 || toX >= worldSize || toY >= worldSize {
+	if toX < 0 || toY < 0 || toX >= WorldSize || toY >= WorldSize {
 		return false
 	}
 
@@ -148,4 +151,5 @@ func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
 }
 
 func Generate() {
+	Generator()
 }

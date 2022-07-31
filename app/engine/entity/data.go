@@ -1,5 +1,7 @@
 package entity
 
+import "image/color"
+
 type EntityClass int
 
 const (
@@ -18,6 +20,9 @@ var Names = map[TypeId]string{
 var Descs = map[TypeId]string{
 	0: "",
 }
+var Colors = map[TypeId]color.Color{
+	0: color.White,
+}
 
 var Classes = map[TypeId]EntityClass{}
 var InitStates = map[TypeId]EntityStateBase{}
@@ -25,6 +30,7 @@ var InitStates = map[TypeId]EntityStateBase{}
 func RegisterEntityType(
 	name, desc string,
 	rune rune,
+	color color.Color,
 	class EntityClass,
 	initState EntityStateBase,
 	selfActions []struct {
@@ -46,6 +52,7 @@ func RegisterEntityType(
 	RegisterRune(typeId, rune)
 	RegisterName(typeId, name)
 	RegisterDesc(typeId, desc)
+	RegisterColor(typeId, color)
 	RegisterClass(typeId, class)
 	RegisterInitState(typeId, initState)
 	RegisterSelfActions(typeId, selfActions)
@@ -65,6 +72,10 @@ func RegisterName(id TypeId, name string) {
 
 func RegisterDesc(id TypeId, desc string) {
 	Descs[id] = desc
+}
+
+func RegisterColor(id TypeId, color color.Color) {
+	Colors[id] = color
 }
 
 func RegisterClass(id TypeId, class EntityClass) {

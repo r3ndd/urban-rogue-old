@@ -1,6 +1,8 @@
 package player
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/r3ndd/urban-rogue/app/engine"
 	"github.com/r3ndd/urban-rogue/app/engine/actor"
@@ -26,7 +28,7 @@ func init() {
 		{"move_self", actor.MoveSelf},
 	}
 
-	playerTypeId = entity.RegisterEntityType("Yourself", "", '@', entity.Active, &entity.EntityState{}, selfActions, nil, nil)
+	playerTypeId = entity.RegisterEntityType("Yourself", "", '@', color.White, entity.Active, &playerState, selfActions, nil, nil)
 }
 
 func Spawn() {

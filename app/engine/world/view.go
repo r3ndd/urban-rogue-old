@@ -1,8 +1,6 @@
 package world
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/r3ndd/urban-rogue/app/engine"
@@ -12,7 +10,7 @@ import (
 )
 
 const fontName string = "agave"
-const baseGridSize int = 60
+const baseGridSize int = 50
 const topMargin int = 16
 const bottomMargin int = 32
 
@@ -21,7 +19,7 @@ var viewX int = 0
 var viewY int = 0
 
 func init() {
-	fontFace = *engine.LoadFont(fontName)
+	fontFace = *engine.LoadFont(fontName, 20)
 	engine.AddView("world", view)
 }
 
@@ -39,11 +37,10 @@ func view(screen *ebiten.Image) error {
 
 	worldX := viewX / tileSize
 	worldY := viewY / tileSize
-	viewTiles := Tiles[worldX:utils.IntMin(worldX+gridSize, worldSize-1)][worldY:utils.IntMin(worldY+gridSize, worldSize-1)]
+	viewTiles := Tiles[worldX:utils.IntMin(worldX+gridSize, WorldSize-1)][worldY:utils.IntMin(worldY+gridSize, WorldSize-1)]
 
 	for gridY := 0; gridY < gridSize; gridY++ {
 		for gridX := 0; gridX < gridSize; gridX++ {
-			var tileRune rune
 			var typeId entity.TypeId
 
 			if len(viewTiles) > gridY && len(viewTiles[gridY]) > gridX {
@@ -58,10 +55,11 @@ func view(screen *ebiten.Image) error {
 				typeId = 0
 			}
 
-			tileRune = entity.Runes[typeId]
+			tileRune := entity.Runes[typeId]
+			tileColor := entity.Colors[typeId]
 			x := gridX*tileSize + sideMargin
 			y := gridY*tileSize + topMargin
-			text.Draw(screen, string(tileRune), fontFace, x, y, color.White)
+			text.Draw(screen, string(tileRune), fontFace, x, y, tileColor)
 		}
 	}
 

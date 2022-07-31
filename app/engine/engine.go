@@ -2,6 +2,8 @@ package engine
 
 import (
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -9,6 +11,8 @@ import (
 func init() {
 	// Load images
 	//
+
+	rand.Seed(time.Now().UnixMilli())
 }
 
 func Run() {

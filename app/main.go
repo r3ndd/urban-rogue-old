@@ -3,10 +3,12 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/r3ndd/urban-rogue/app/engine"
+	"github.com/r3ndd/urban-rogue/app/engine/player"
 	"github.com/r3ndd/urban-rogue/app/engine/turn"
 	"github.com/r3ndd/urban-rogue/app/engine/world"
 
-	"github.com/r3ndd/urban-rogue/app/x/player"
+	_ "github.com/r3ndd/urban-rogue/app/x/foliage"
+	_ "github.com/r3ndd/urban-rogue/app/x/worldgen"
 )
 
 func main() {
