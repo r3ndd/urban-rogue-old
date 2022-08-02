@@ -28,12 +28,21 @@ func init() {
 		{"move_self", actor.MoveSelf},
 	}
 
-	playerTypeId = entity.RegisterEntityType("Yourself", "", '@', color.White, entity.Active, &playerState, selfActions, nil, nil)
+	regData := entity.RegData{
+		Name:        "Youself",
+		Rune:        '@',
+		Color:       color.White,
+		Class:       entity.Active,
+		InitState:   &playerState,
+		SelfActions: selfActions,
+		ZIndex:      1,
+	}
+	playerTypeId = entity.RegisterEntityType(&regData)
 }
 
 func Spawn() {
 	playerState = PlayerState{}
-	playerId, _ = world.CreateEntity(playerTypeId, 0, 0)
+	playerId, _ = world.CreateEntity(playerTypeId, 0, 0, true)
 
 	turn.RegisterActor(playerId, OnTurn, AfterTurn)
 

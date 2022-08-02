@@ -1,6 +1,9 @@
 package entity
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"image/color"
+)
 
 type TypeId uint16
 type InstanceId [InstanceIdBytes]byte
@@ -11,16 +14,26 @@ type EntityStateBase interface {
 	GetPos() (int, int)
 	SetTypeId(TypeId)
 	SetPos(int, int)
+	GetRune() rune
+	GetColor() color.Color
+	GetOverlappable() bool
+	GetZIndex() byte
+	GetOverlapping() Overlapping
+	SetOverlapping(TypeId, InstanceId)
+	GetOverlapped() bool
+	SetOverlapped(bool)
 	Copy() EntityStateBase
 	IncStatus(StatusId)
 	DecStatus(StatusId)
 }
 
 type EntityState struct {
-	typeId TypeId
-	x      int
-	y      int
-	status map[StatusId]int
+	typeId      TypeId
+	x           int
+	y           int
+	status      map[StatusId]int
+	overlapping Overlapping
+	overlapped  bool
 }
 
 type EntityInfo struct {
@@ -28,6 +41,11 @@ type EntityInfo struct {
 	X      int
 	Y      int
 	State  EntityStateBase
+}
+
+type Overlapping struct {
+	TypeId     TypeId
+	InstanceId InstanceId
 }
 
 const InstanceIdBytes = 4
@@ -50,6 +68,39 @@ func (e *EntityState) SetTypeId(typeId TypeId) {
 func (e *EntityState) SetPos(x, y int) {
 	e.x = x
 	e.y = y
+}
+
+func (e *EntityState) GetRune() rune {
+	return Runes[e.GetTypeId()]
+}
+
+func (e *EntityState) GetColor() color.Color {
+	return Colors[e.GetTypeId()]
+}
+
+func (e *EntityState) GetOverlappable() bool {
+	return Overlapables[e.GetTypeId()]
+}
+
+func (e *EntityState) GetZIndex() byte {
+	return ZIndexes[e.GetTypeId()]
+}
+
+func (e *EntityState) GetOverlapping() Overlapping {
+	return e.overlapping
+}
+
+func (e *EntityState) SetOverlapping(typeId TypeId, instanceId InstanceId) {
+	e.overlapping.TypeId = typeId
+	e.overlapping.InstanceId = instanceId
+}
+
+func (e *EntityState) GetOverlapped() bool {
+	return e.overlapped
+}
+
+func (e *EntityState) SetOverlapped(overlapped bool) {
+	e.overlapped = overlapped
 }
 
 func (e *EntityState) Copy() EntityStateBase {

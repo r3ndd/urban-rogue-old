@@ -1,8 +1,33 @@
 package entity
 
-import "image/color"
+import (
+	"image/color"
+)
 
 type EntityClass int
+
+type RegData struct {
+	Name        string
+	Desc        string
+	Rune        rune
+	Color       color.Color
+	Overlapable bool
+	ZIndex      byte
+	Class       EntityClass
+	InitState   EntityStateBase
+	SelfActions []struct {
+		ActionId
+		SelfAction
+	}
+	TargetActions []struct {
+		ActionId
+		TargetAction
+	}
+	Reactions []struct {
+		ActionId
+		Reaction
+	}
+}
 
 const (
 	Passive EntityClass = 0
@@ -12,7 +37,7 @@ const (
 
 var numEntities = 0
 var Runes = map[TypeId]rune{
-	0: '.',
+	0: '·',
 }
 var Names = map[TypeId]string{
 	0: "",
@@ -26,48 +51,36 @@ var Colors = map[TypeId]color.Color{
 
 var Classes = map[TypeId]EntityClass{}
 var InitStates = map[TypeId]EntityStateBase{}
+var Overlapables = map[TypeId]bool{}
+var ZIndexes = map[TypeId]byte{}
 
 func RegisterEntityType(
-	name, desc string,
-	rune rune,
-	color color.Color,
-	class EntityClass,
-	initState EntityStateBase,
-	selfActions []struct {
-		ActionId
-		SelfAction
-	},
-	targetActions []struct {
-		ActionId
-		TargetAction
-	},
-	reactions []struct {
-		ActionId
-		Reaction
-	},
+	data *RegData,
 ) TypeId {
 	numEntities++
 	typeId := TypeId(numEntities)
 
-	RegisterRune(typeId, rune)
-	RegisterName(typeId, name)
-	RegisterDesc(typeId, desc)
-	RegisterColor(typeId, color)
-	RegisterClass(typeId, class)
-	RegisterInitState(typeId, initState)
-	RegisterSelfActions(typeId, selfActions)
-	RegisterTargetActions(typeId, targetActions)
-	RegisterReactions(typeId, reactions)
+	RegisterName(typeId, data.Name)
+	RegisterRune(typeId, data.Rune)
+	RegisterDesc(typeId, data.Desc)
+	RegisterColor(typeId, data.Color)
+	RegisterOverlapable(typeId, data.Overlapable)
+	RegisterZIndex(typeId, data.ZIndex)
+	RegisterClass(typeId, data.Class)
+	RegisterInitState(typeId, data.InitState)
+	RegisterSelfActions(typeId, data.SelfActions)
+	RegisterTargetActions(typeId, data.TargetActions)
+	RegisterReactions(typeId, data.Reactions)
 
 	return typeId
 }
 
-func RegisterRune(id TypeId, rune rune) {
-	Runes[id] = rune
-}
-
 func RegisterName(id TypeId, name string) {
 	Names[id] = name
+}
+
+func RegisterRune(id TypeId, rune rune) {
+	Runes[id] = rune
 }
 
 func RegisterDesc(id TypeId, desc string) {
@@ -76,6 +89,14 @@ func RegisterDesc(id TypeId, desc string) {
 
 func RegisterColor(id TypeId, color color.Color) {
 	Colors[id] = color
+}
+
+func RegisterOverlapable(id TypeId, overlapable bool) {
+	Overlapables[id] = overlapable
+}
+
+func RegisterZIndex(id TypeId, zIndex byte) {
+	ZIndexes[id] = zIndex
 }
 
 func RegisterClass(id TypeId, class EntityClass) {

@@ -25,7 +25,7 @@ func init() {
 	// fmt.Println(unsafe.Sizeof(EntityTile{}))
 }
 
-func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
+func CreateEntity(typeId entity.TypeId, x, y int, destroy bool) (entity.InstanceId, bool) {
 	class, exists := entity.Classes[typeId]
 
 	if !exists {
@@ -40,7 +40,11 @@ func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
 
 	if class != entity.Passive {
 		if tile.ActiveTypeId != 0 {
-			return entity.InstanceId{}, false
+			if !destroy {
+				return entity.InstanceId{}, false
+			} else {
+				DestroyEntityAt(x, y, true)
+			}
 		}
 
 		tile.ActiveTypeId = typeId
@@ -54,7 +58,11 @@ func CreateEntity(typeId entity.TypeId, x, y int) (entity.InstanceId, bool) {
 		return entity.InstanceId{}, true
 	} else {
 		if tile.PassiveTypeId != 0 {
-			return entity.InstanceId{}, false
+			if !destroy {
+				return entity.InstanceId{}, false
+			} else {
+				DestroyEntityAt(x, y, false)
+			}
 		}
 
 		tile.PassiveTypeId = typeId
@@ -124,22 +132,57 @@ func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
 	toTile := &Tiles[toY][toX]
 
 	if active {
-		if toTile.ActiveTypeId != 0 {
+		state, exists := entity.GetEntityState(fromTile.ActiveInstanceId)
+		var overlapping entity.Overlapping
+
+		if exists {
+			if state.GetOverlapped() {
+				return false
+			}
+
+			overlapping = state.GetOverlapping()
+
+			if toTile.ActiveTypeId != 0 {
+				zIndex := state.GetZIndex()
+				toState, toExists := entity.GetEntityState(toTile.ActiveInstanceId)
+				var overlapable bool
+				var toZIndex byte
+
+				if toExists {
+					overlapable = toState.GetOverlappable()
+					toZIndex = toState.GetZIndex()
+				} else {
+					overlapable = entity.Overlapables[toTile.ActiveTypeId]
+					toZIndex = entity.ZIndexes[toTile.ActiveTypeId]
+				}
+
+				if !overlapable || zIndex <= toZIndex {
+					return false
+				}
+
+				overState, overExists := entity.GetEntityState(overlapping.InstanceId)
+
+				if overExists {
+					overState.SetOverlapped(false)
+				}
+
+				if toExists {
+					toState.SetOverlapped(true)
+				}
+			}
+
+			state.SetPos(toX, toY)
+		} else if toTile.ActiveTypeId != 0 {
 			return false
 		}
 
-		state, _ := entity.GetEntityState(fromTile.ActiveInstanceId)
-
-		if state != nil {
-			state.SetPos(toX, toY)
-		}
-
+		state.SetOverlapping(toTile.ActiveTypeId, toTile.ActiveInstanceId)
 		toTile.ActiveTypeId = fromTile.ActiveTypeId
 		toTile.ActiveInstanceId = fromTile.ActiveInstanceId
-		fromTile.ActiveTypeId = 0
-		fromTile.ActiveInstanceId = [4]byte{}
+		fromTile.ActiveTypeId = overlapping.TypeId
+		fromTile.ActiveInstanceId = overlapping.InstanceId
 	} else {
-		if fromTile.PassiveTypeId != 0 {
+		if toTile.PassiveTypeId != 0 {
 			return false
 		}
 

@@ -7,7 +7,6 @@ import (
 	"github.com/r3ndd/urban-rogue/app/engine/turn"
 	"github.com/r3ndd/urban-rogue/app/engine/world"
 
-	_ "github.com/r3ndd/urban-rogue/app/x/foliage"
 	_ "github.com/r3ndd/urban-rogue/app/x/worldgen"
 )
 
