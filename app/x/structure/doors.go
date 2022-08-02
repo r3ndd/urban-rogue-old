@@ -14,6 +14,15 @@ type DoorState struct {
 var WoodenDoorTypeId entity.TypeId
 
 func init() {
+	reactions := []struct {
+		entity.ActionId
+		entity.Reaction
+	}{
+		{"open", OpenReaction},
+		{"close", CloseReaction},
+		{"toggle", ToggleReaction},
+	}
+
 	regData := entity.RegData{
 		Name:      "Wooden Door",
 		Desc:      "A simple wooden door",
@@ -21,6 +30,7 @@ func init() {
 		Color:     color.RGBA{135, 95, 55, 255},
 		Class:     entity.Active,
 		InitState: &DoorState{},
+		Reactions: reactions,
 	}
 	WoodenDoorTypeId = entity.RegisterEntityType(&regData)
 }
@@ -40,4 +50,22 @@ func (state *DoorState) GetOverlappable() bool {
 func (state *DoorState) Copy() entity.EntityStateBase {
 	stateCopy := *state
 	return &stateCopy
+}
+
+func OpenReaction(self entity.InstanceId, actor entity.InstanceId, args ...interface{}) {
+	stateI, _ := entity.GetEntityState(self)
+	state := stateI.(*DoorState)
+	state.Open = true
+}
+
+func CloseReaction(self entity.InstanceId, actor entity.InstanceId, args ...interface{}) {
+	stateI, _ := entity.GetEntityState(self)
+	state := stateI.(*DoorState)
+	state.Open = false
+}
+
+func ToggleReaction(self entity.InstanceId, actor entity.InstanceId, args ...interface{}) {
+	stateI, _ := entity.GetEntityState(self)
+	state := stateI.(*DoorState)
+	state.Open = !state.Open
 }

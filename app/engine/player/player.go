@@ -28,14 +28,23 @@ func init() {
 		{"move_self", actor.MoveSelf},
 	}
 
+	targetActions := []struct {
+		entity.ActionId
+		entity.TargetAction
+	}{
+
+		{"open", nil},
+	}
+
 	regData := entity.RegData{
-		Name:        "Youself",
-		Rune:        '@',
-		Color:       color.White,
-		Class:       entity.Active,
-		InitState:   &playerState,
-		SelfActions: selfActions,
-		ZIndex:      1,
+		Name:          "Youself",
+		Rune:          '@',
+		Color:         color.White,
+		Class:         entity.Active,
+		InitState:     &playerState,
+		SelfActions:   selfActions,
+		TargetActions: targetActions,
+		ZIndex:        1,
 	}
 	playerTypeId = entity.RegisterEntityType(&regData)
 }
