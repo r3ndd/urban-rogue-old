@@ -3,8 +3,6 @@ package player
 import (
 	"image/color"
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/r3ndd/urban-rogue/app/engine"
 	"github.com/r3ndd/urban-rogue/app/engine/actor"
 	"github.com/r3ndd/urban-rogue/app/engine/entity"
 	"github.com/r3ndd/urban-rogue/app/engine/turn"
@@ -32,8 +30,9 @@ func init() {
 		entity.ActionId
 		entity.TargetAction
 	}{
-
 		{"open", nil},
+		{"close", nil},
+		{"toggle", nil},
 	}
 
 	regData := entity.RegData{
@@ -54,46 +53,7 @@ func Spawn() {
 	playerId, _ = world.CreateEntity(playerTypeId, 0, 0, true)
 
 	turn.RegisterActor(playerId, OnTurn, AfterTurn)
-
-	engine.AddKeyboardListener(ebiten.KeyH, "keydown", func() {
-		if !isTurn {
-			return
-		}
-
-		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
-			actor.ActSelf(playerId, "move_self", "left")
-		})
-	})
-
-	engine.AddKeyboardListener(ebiten.KeyL, "keydown", func() {
-		if !isTurn {
-			return
-		}
-
-		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
-			actor.ActSelf(playerId, "move_self", "right")
-		})
-	})
-
-	engine.AddKeyboardListener(ebiten.KeyK, "keydown", func() {
-		if !isTurn {
-			return
-		}
-
-		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
-			actor.ActSelf(playerId, "move_self", "up")
-		})
-	})
-
-	engine.AddKeyboardListener(ebiten.KeyJ, "keydown", func() {
-		if !isTurn {
-			return
-		}
-
-		turn.ConsumeTurn(playerId, turn.TurnCap, func() {
-			actor.ActSelf(playerId, "move_self", "down")
-		})
-	})
+	AddInputListeners()
 }
 
 func OnTurn() {

@@ -28,8 +28,8 @@ func init() {
 		Desc:      "A simple wooden door",
 		Rune:      '_',
 		Color:     color.RGBA{135, 95, 55, 255},
-		Class:     entity.Active,
-		InitState: &DoorState{},
+		Class:     entity.Hybrid,
+		InitState: &DoorState{Open: false},
 		Reactions: reactions,
 	}
 	WoodenDoorTypeId = entity.RegisterEntityType(&regData)

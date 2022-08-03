@@ -24,7 +24,7 @@ func ActSelf(self entity.InstanceId, actionId entity.ActionId, args ...interface
 }
 
 // Self is active (not hybrid), target is active or hybrid
-func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.ActionId, args ...interface{}) bool {
+func ActTarget(self entity.InstanceId, actionId entity.ActionId, targetX, targetY int, args ...interface{}) bool {
 	state, exists := entity.GetEntityState(self)
 
 	if !exists {
@@ -38,7 +38,7 @@ func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.Act
 		return false
 	}
 
-	targetTile := world.Tiles[targetY][targetX]
+	targetTile := &world.Tiles[targetY][targetX]
 
 	if targetTile.ActiveTypeId == 0 {
 		return false
@@ -51,9 +51,13 @@ func ActTarget(self entity.InstanceId, targetX, targetY int, actionId entity.Act
 	}
 
 	target := targetTile.ActiveInstanceId
-	res := action(self, target, args...)
-	react(target, self, actionId, args...)
+	res := true
 
+	if action != nil {
+		res = action(self, target, args...)
+	}
+
+	react(target, self, actionId, args...)
 	return res
 }
 
