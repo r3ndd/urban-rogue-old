@@ -77,12 +77,10 @@ func AddMouseScrollListener(phase string, run func()) {
 
 func handleInput() error {
 	for key, handlersMap := range keyboardHandlers {
-		if !ebiten.IsKeyPressed(key) {
-			continue
-		}
-
-		for _, handler := range handlersMap["keypressed"] {
-			handler.Run()
+		if ebiten.IsKeyPressed(key) {
+			for _, handler := range handlersMap["keypressed"] {
+				handler.Run()
+			}
 		}
 
 		if inpututil.IsKeyJustPressed(key) {

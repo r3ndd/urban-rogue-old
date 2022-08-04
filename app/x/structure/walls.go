@@ -11,6 +11,7 @@ type WallState struct {
 }
 
 var BrickWallTypeId entity.TypeId
+var WoodWallTypeId entity.TypeId
 
 func init() {
 	regData := entity.RegData{
@@ -22,4 +23,14 @@ func init() {
 		InitState: &WallState{},
 	}
 	BrickWallTypeId = entity.RegisterEntityType(&regData)
+
+	regData = entity.RegData{
+		Name:      "Wood Wall",
+		Desc:      "A wall made of wood",
+		Rune:      'ǁ',
+		Color:     color.RGBA{128, 88, 28, 255},
+		Class:     entity.Hybrid,
+		InitState: &WallState{},
+	}
+	WoodWallTypeId = entity.RegisterEntityType(&regData)
 }

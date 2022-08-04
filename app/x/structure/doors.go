@@ -11,7 +11,7 @@ type DoorState struct {
 	Open bool
 }
 
-var WoodenDoorTypeId entity.TypeId
+var WoodDoorTypeId entity.TypeId
 
 func init() {
 	reactions := []struct {
@@ -24,7 +24,7 @@ func init() {
 	}
 
 	regData := entity.RegData{
-		Name:      "Wooden Door",
+		Name:      "Wood Door",
 		Desc:      "A simple wooden door",
 		Rune:      '_',
 		Color:     color.RGBA{135, 95, 55, 255},
@@ -32,7 +32,7 @@ func init() {
 		InitState: &DoorState{Open: false},
 		Reactions: reactions,
 	}
-	WoodenDoorTypeId = entity.RegisterEntityType(&regData)
+	WoodDoorTypeId = entity.RegisterEntityType(&regData)
 }
 
 func (state *DoorState) GetRune() rune {

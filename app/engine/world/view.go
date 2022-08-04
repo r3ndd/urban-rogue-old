@@ -1,6 +1,7 @@
 package world
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -21,6 +22,8 @@ const fontRatioDenom int = 2
 var fontFace font.Face
 var viewX int = 0
 var viewY int = 0
+var gridXSize int
+var gridYSize int
 
 func init() {
 	fontFace = *engine.LoadFont(fontName, 22)
@@ -31,8 +34,8 @@ func view(screen *ebiten.Image) error {
 	screenWidth, screenHeight := screen.Size()
 	viewSize := screenHeight - topMargin - bottomMargin
 	sideMargin := (screenWidth - viewSize) / 2
-	gridXSize := baseGridSize
-	gridYSize := baseGridSize / fontRatioNum * fontRatioDenom
+	gridXSize = baseGridSize
+	gridYSize = baseGridSize / fontRatioNum * fontRatioDenom
 	tileXSize := viewSize / gridXSize
 	tileYSize := viewSize / gridYSize
 	yExcess := viewSize % gridYSize
@@ -41,37 +44,27 @@ func view(screen *ebiten.Image) error {
 		gridYSize += yExcess / tileYSize
 	}
 
-	worldX := viewX / tileXSize
-	worldY := viewY / tileYSize
-	viewTiles := Tiles[worldY:utils.IntMin(worldY+gridYSize, WorldSize-1)][worldX:utils.IntMin(worldX+gridXSize, WorldSize-1)]
-
-	for gridY := 0; gridY < gridYSize; gridY++ {
-		for gridX := 0; gridX < gridXSize; gridX++ {
+	for gridY, row := range Tiles[viewY:utils.IntMin(viewY+gridYSize, WorldSize-1)] {
+		for gridX, tile := range row[viewX:utils.IntMin(viewX+gridXSize, WorldSize-1)] {
 			var tileRune rune
 			var tileColor color.Color
 
-			if len(viewTiles) > gridY && len(viewTiles[gridY]) > gridX {
-				_entity := viewTiles[gridY][gridX]
-				state, exists := entity.GetEntityState(_entity.ActiveInstanceId)
+			state, exists := entity.GetEntityState(tile.ActiveInstanceId)
 
-				if exists {
-					tileRune = state.GetRune()
-					tileColor = state.GetColor()
-				} else {
-					var typeId entity.TypeId
-
-					if _entity.ActiveTypeId != 0 {
-						typeId = _entity.ActiveTypeId
-					} else {
-						typeId = _entity.PassiveTypeId
-					}
-
-					tileRune = entity.Runes[typeId]
-					tileColor = entity.Colors[typeId]
-				}
+			if exists {
+				tileRune = state.GetRune()
+				tileColor = state.GetColor()
 			} else {
-				tileRune = entity.Runes[0]
-				tileColor = entity.Colors[0]
+				var typeId entity.TypeId
+
+				if tile.ActiveTypeId != 0 {
+					typeId = tile.ActiveTypeId
+				} else {
+					typeId = tile.PassiveTypeId
+				}
+
+				tileRune = entity.Runes[typeId]
+				tileColor = entity.Colors[typeId]
 			}
 
 			x := gridX*tileXSize + sideMargin
@@ -81,4 +74,37 @@ func view(screen *ebiten.Image) error {
 	}
 
 	return nil
+}
+
+func MoveView(dir string) {
+	shiftScale := utils.IntMax(baseGridSize/10, 1)
+
+	switch dir {
+	case "left":
+		if viewX >= shiftScale {
+			viewX -= shiftScale
+		} else {
+			viewX = 0
+		}
+	case "right":
+		if viewX < WorldSize-gridXSize-shiftScale {
+			viewX += shiftScale
+		} else {
+			viewX = WorldSize - gridXSize
+		}
+	case "up":
+		if viewY >= shiftScale {
+			viewY -= shiftScale
+		} else {
+			viewY = 0
+		}
+	case "down":
+		if viewY < WorldSize-gridYSize-shiftScale {
+			viewY += shiftScale
+		} else {
+			viewY = WorldSize - gridYSize
+		}
+	}
+
+	fmt.Printf("%d, %d\n", viewX, viewY)
 }

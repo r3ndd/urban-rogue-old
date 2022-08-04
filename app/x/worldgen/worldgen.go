@@ -23,6 +23,7 @@ func init() {
 			}
 		}
 
-		GenHouse(10, 10, 20, 10, true)
+		GenBrickHouse(10, 10, 20, 10, true)
+		GenWoodHouse(30, 30, 20, 10, true)
 	}
 }
