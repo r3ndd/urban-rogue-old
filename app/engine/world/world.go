@@ -16,7 +16,7 @@ type EntityTile struct {
 }
 type WorldTiles [WorldSize][WorldSize]EntityTile
 
-const WorldSize = 100
+const WorldSize = 10e3
 
 var Tiles = WorldTiles{}
 var Generator func()
