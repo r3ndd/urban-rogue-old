@@ -1,9 +1,7 @@
 package world
 
 import (
-	// "fmt"
 	"log"
-	// "unsafe"
 
 	"github.com/r3ndd/urban-rogue/app/engine/entity"
 )
@@ -19,7 +17,10 @@ type WorldTiles [WorldSize][WorldSize]EntityTile
 const WorldSize = 10e3
 
 var Tiles = WorldTiles{}
+var DepthTiles = map[int][][]EntityTile{}
 var Generator func()
+
+var numDepthTiles = 0
 
 func init() {
 	// fmt.Println(unsafe.Sizeof(EntityTile{}))
@@ -191,6 +192,17 @@ func MoveEntity(fromX, fromY, toX, toY int, active bool) bool {
 	}
 
 	return true
+}
+
+func CreateDepthTiles(width, height int) int {
+	numDepthTiles++
+	DepthTiles[numDepthTiles] = make([][]EntityTile, height)
+
+	for i := 0; i < height; i++ {
+		DepthTiles[numDepthTiles][i] = make([]EntityTile, width)
+	}
+
+	return numDepthTiles
 }
 
 func Generate() {
