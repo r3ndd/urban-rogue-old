@@ -75,6 +75,19 @@ func AddMouseScrollListener(phase string, run func()) {
 	mouseScrollHandlers[phase] = append(mouseScrollHandlers[phase], handler)
 }
 
+func AddDigitKeyListener(phase string, run func(int)) {
+	AddKeyboardListener(ebiten.KeyDigit0, phase, func() { run(0) })
+	AddKeyboardListener(ebiten.KeyDigit1, phase, func() { run(1) })
+	AddKeyboardListener(ebiten.KeyDigit2, phase, func() { run(2) })
+	AddKeyboardListener(ebiten.KeyDigit3, phase, func() { run(3) })
+	AddKeyboardListener(ebiten.KeyDigit4, phase, func() { run(4) })
+	AddKeyboardListener(ebiten.KeyDigit5, phase, func() { run(5) })
+	AddKeyboardListener(ebiten.KeyDigit6, phase, func() { run(6) })
+	AddKeyboardListener(ebiten.KeyDigit7, phase, func() { run(7) })
+	AddKeyboardListener(ebiten.KeyDigit8, phase, func() { run(8) })
+	AddKeyboardListener(ebiten.KeyDigit9, phase, func() { run(9) })
+}
+
 func handleInput() error {
 	for key, handlersMap := range keyboardHandlers {
 		if ebiten.IsKeyPressed(key) {

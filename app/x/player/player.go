@@ -17,6 +17,7 @@ var playerTypeId entity.TypeId
 var playerId entity.InstanceId
 var playerState PlayerState = PlayerState{}
 var isTurn = false
+var turnRepeatQueue = []func() bool{}
 
 func init() {
 	selfActions := []struct {
@@ -58,8 +59,19 @@ func Spawn() {
 
 func OnTurn() {
 	isTurn = true
+	ProcessActionRepeatQueue()
 }
 
 func AfterTurn() {
 	isTurn = false
+}
+
+func ProcessActionRepeatQueue() {
+	finished := false
+
+	for i := 0; !finished && len(turnRepeatQueue) > 0; i++ {
+		turn := turnRepeatQueue[0]
+		turnRepeatQueue = turnRepeatQueue[1:]
+		finished = turn()
+	}
 }

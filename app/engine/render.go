@@ -15,8 +15,6 @@ func AddView(name string, view View) {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// ebitenutil.DebugPrint(screen, "Hello, world!")
-
 	for _, view := range views {
 		err := view(screen)
 

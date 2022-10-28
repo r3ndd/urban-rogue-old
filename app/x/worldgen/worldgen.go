@@ -9,7 +9,7 @@ import (
 
 func init() {
 	world.Generator = func() {
-		GenCity()
+		GenTestHouses()
 	}
 }
 

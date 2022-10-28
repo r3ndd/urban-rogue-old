@@ -9,6 +9,7 @@ import (
 var dirSelActive bool = false
 var shiftActive bool = false
 var ctrlActive bool = false
+var digitKeyActive int = 1
 var actDir string
 
 func AddInputListeners() {
@@ -33,21 +34,27 @@ func AddInputListeners() {
 		}
 	})
 
+	engine.AddDigitKeyListener("keydown", func(digit int) {
+		if digit != 0 {
+			digitKeyActive = digit
+		}
+	})
+
 	engine.AddKeyboardListener(ebiten.KeyH, "keydown", func() { HandleDir("left") })
 	engine.AddKeyboardListener(ebiten.KeyL, "keydown", func() { HandleDir("right") })
 	engine.AddKeyboardListener(ebiten.KeyK, "keydown", func() { HandleDir("up") })
 	engine.AddKeyboardListener(ebiten.KeyJ, "keydown", func() { HandleDir("down") })
 
-	engine.AddKeyboardListener(ebiten.KeyD, "keydown", ToggleDoorTurn)
+	engine.AddKeyboardListener(ebiten.KeyD, "keydown", func() { DoTurn("toggle_door", ToggleDoorTurn) })
 }
 
 func HandleDir(dir string) {
 	if shiftActive {
 		world.MoveView(dir)
-	} else if !dirSelActive {
-		MoveTurn(dir)
-	} else {
+	} else if dirSelActive {
 		actDir = dir
 		dirSelActive = false
+	} else {
+		DoTurn("move", func() bool { return MoveTurn(dir) })
 	}
 }

@@ -14,7 +14,7 @@ var TurnCount int
 var turnCaps = map[entity.InstanceId]int{}
 var onTurns = map[entity.InstanceId]func(){}
 var afterTurns = map[entity.InstanceId]func(){}
-var actionQueue map[entity.InstanceId]func()
+var actionQueue = map[entity.InstanceId]func(){}
 var endTurn chan entity.InstanceId
 var capMu sync.Mutex
 var queueMu sync.Mutex
@@ -77,16 +77,16 @@ func Begin() {
 	}
 }
 
-func ConsumeTurn(id entity.InstanceId, duration int, action func()) {
+func ConsumeTurn(id entity.InstanceId, duration int, action func()) bool {
 	if TurnEntity != id {
-		return
+		return false
 	}
 
 	capMu.Lock()
 	_, exists := turnCaps[id]
 
 	if !exists {
-		return
+		return false
 	}
 
 	turnCaps[id] -= duration
@@ -97,7 +97,7 @@ func ConsumeTurn(id entity.InstanceId, duration int, action func()) {
 		action()
 
 		if remaining > 0 {
-			return
+			return false
 		}
 	} else {
 		queueMu.Lock()
@@ -106,6 +106,7 @@ func ConsumeTurn(id entity.InstanceId, duration int, action func()) {
 	}
 
 	EndTurn(id)
+	return true
 }
 
 func EndTurn(id entity.InstanceId) {

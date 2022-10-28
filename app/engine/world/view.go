@@ -1,7 +1,6 @@
 package world
 
 import (
-	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -105,6 +104,4 @@ func MoveView(dir string) {
 			viewY = WorldSize - gridYSize
 		}
 	}
-
-	fmt.Printf("%d, %d\n", viewX, viewY)
 }
