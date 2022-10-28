@@ -134,6 +134,18 @@ func GetEntityState(id InstanceId) (EntityStateBase, bool) {
 	return state, exists
 }
 
+func GetEntityInstanceIds() []InstanceId {
+	ids := make([]InstanceId, len(entityStates))
+	i := 0
+
+	for k := range entityStates {
+		ids[i] = k
+		i++
+	}
+
+	return ids
+}
+
 func getNextEntityInstanceId() InstanceId {
 	numActiveEntities++
 	idBytes := make([]byte, 4)

@@ -34,9 +34,23 @@ func Begin() {
 	// Process turns indefinitely
 	for {
 		// Iterate through current actors
-		for id, onTurn := range onTurns {
+		for _, id := range entity.GetEntityInstanceIds() {
+			state, exists := entity.GetEntityState(id)
+
+			if !exists {
+				continue
+			}
+
+			typeId := state.GetTypeId()
+			onTurn := entity.OnTurns[typeId]
+
+			if onTurn == nil {
+				continue
+			}
+
 			TurnEntity = id
 			TurnCount++
+
 			queueMu.Lock()
 
 			// Check if action is queued
@@ -110,7 +124,9 @@ func ConsumeTurn(id entity.InstanceId, duration int, action func()) bool {
 }
 
 func EndTurn(id entity.InstanceId) {
-	afterTurns[id]()
+	state, _ := entity.GetEntityState(id)
+	typeId := state.GetTypeId()
+	entity.AfterTurns[typeId]()
 
 	capMu.Lock()
 	turnCaps[id] += TurnCap

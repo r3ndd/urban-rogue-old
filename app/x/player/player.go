@@ -45,6 +45,8 @@ func init() {
 		SelfActions:   selfActions,
 		TargetActions: targetActions,
 		ZIndex:        1,
+		OnTurn:        OnTurn,
+		AfterTurn:     AfterTurn,
 	}
 	playerTypeId = entity.RegisterEntityType(&regData)
 }

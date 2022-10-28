@@ -27,6 +27,8 @@ type RegData struct {
 		ActionId
 		Reaction
 	}
+	OnTurn    func()
+	AfterTurn func()
 }
 
 const (
@@ -53,6 +55,8 @@ var Classes = map[TypeId]EntityClass{}
 var InitStates = map[TypeId]EntityStateBase{}
 var Overlapables = map[TypeId]bool{}
 var ZIndexes = map[TypeId]byte{}
+var OnTurns = map[TypeId]func(){}
+var AfterTurns = map[TypeId]func(){}
 
 func RegisterEntityType(
 	data *RegData,
@@ -71,6 +75,8 @@ func RegisterEntityType(
 	RegisterSelfActions(typeId, data.SelfActions)
 	RegisterTargetActions(typeId, data.TargetActions)
 	RegisterReactions(typeId, data.Reactions)
+	RegisterOnTurn(typeId, data.OnTurn)
+	RegisterAfterTurn(typeId, data.AfterTurn)
 
 	return typeId
 }
@@ -144,4 +150,12 @@ func RegisterReactions(id TypeId, reactions []struct {
 	for _, data := range reactions {
 		EntityReactions[id][data.ActionId] = data.Reaction
 	}
+}
+
+func RegisterOnTurn(id TypeId, onTurn func()) {
+	OnTurns[id] = onTurn
+}
+
+func RegisterAfterTurn(id TypeId, afterTurn func()) {
+	AfterTurns[id] = afterTurn
 }
