@@ -1,4 +1,4 @@
-package agents
+package animals
 
 import (
 	"image/color"
@@ -6,10 +6,12 @@ import (
 	"github.com/r3ndd/urban-rogue/app/engine/actor"
 	"github.com/r3ndd/urban-rogue/app/engine/agent"
 	"github.com/r3ndd/urban-rogue/app/engine/entity"
+	"github.com/r3ndd/urban-rogue/app/x/agents/behavior"
 )
 
 type BunnyState struct {
 	agent.AgentState
+	FearedEntity entity.InstanceId
 }
 
 var BunnyTypeId entity.TypeId
@@ -42,20 +44,35 @@ func init() {
 		TargetActions: targetActions,
 		Reactions:     reactions,
 		ZIndex:        0,
-		OnTurn:        OnTurn,
-		AfterTurn:     AfterTurn,
+		OnTurn:        BunnyOnTurn,
+		AfterTurn:     BunnyAfterTurn,
 	}
 	BunnyTypeId = entity.RegisterEntityType(&regData)
 }
 
-func Spawn(x, y int) entity.InstanceId {
-	return agent.Spawn(BunnyTypeId, x, y, OnTurn, AfterTurn)
+func (state *BunnyState) Copy() entity.EntityStateBase {
+	stateCopy := *state
+	return &stateCopy
 }
 
-func OnTurn() {
-
+func SpawnBunny(x, y int) entity.InstanceId {
+	return agent.Spawn(BunnyTypeId, x, y)
 }
 
-func AfterTurn() {
+func BunnyOnTurn(self entity.InstanceId) {
+	stateI, _ := entity.GetEntityState(self)
+	state := stateI.(*BunnyState)
 
+	switch state.SmState {
+	case 0: // Random walk
+		behavior.RandomWalk(self)
+	case 1: // Escaping from feared entity
+		behavior.RandomEscape(self, state.FearedEntity)
+	}
+}
+
+func BunnyAfterTurn(self entity.InstanceId) {
+	stateI, _ := entity.GetEntityState(self)
+	state := stateI.(*BunnyState)
+	_ = state
 }

@@ -4,12 +4,14 @@ import (
 	"math/rand"
 
 	"github.com/r3ndd/urban-rogue/app/engine/world"
+	"github.com/r3ndd/urban-rogue/app/x/agents/animals"
 	"github.com/r3ndd/urban-rogue/app/x/foliage"
 )
 
 func init() {
 	world.Generator = func() {
 		GenTestHouses()
+		animals.SpawnBunny(5, 5)
 	}
 }
 

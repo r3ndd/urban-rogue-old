@@ -37,7 +37,7 @@ func init() {
 	}
 
 	regData := entity.RegData{
-		Name:          "Youself",
+		Name:          "Yourself",
 		Rune:          '@',
 		Color:         color.White,
 		Class:         entity.Active,
@@ -51,20 +51,25 @@ func init() {
 	playerTypeId = entity.RegisterEntityType(&regData)
 }
 
+func (state *PlayerState) Copy() entity.EntityStateBase {
+	stateCopy := *state
+	return &stateCopy
+}
+
 func Spawn() {
 	playerState = PlayerState{}
 	playerId, _ = world.CreateEntity(playerTypeId, 0, 0, true)
 
-	turn.RegisterActor(playerId, OnTurn, AfterTurn)
+	turn.RegisterActor(playerId)
 	AddInputListeners()
 }
 
-func OnTurn() {
+func OnTurn(self entity.InstanceId) {
 	isTurn = true
 	ProcessActionRepeatQueue()
 }
 
-func AfterTurn() {
+func AfterTurn(self entity.InstanceId) {
 	isTurn = false
 }
 

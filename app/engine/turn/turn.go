@@ -12,20 +12,15 @@ var TurnEntity entity.InstanceId
 var TurnCount int
 
 var turnCaps = map[entity.InstanceId]int{}
-var onTurns = map[entity.InstanceId]func(){}
-var afterTurns = map[entity.InstanceId]func(){}
 var actionQueue = map[entity.InstanceId]func(){}
 var endTurn chan entity.InstanceId
 var capMu sync.Mutex
 var queueMu sync.Mutex
 
-func RegisterActor(id entity.InstanceId, onTurn func(), afterTurn func()) {
+func RegisterActor(id entity.InstanceId) {
 	capMu.Lock()
 	turnCaps[id] = TurnCap
 	capMu.Unlock()
-
-	onTurns[id] = onTurn
-	afterTurns[id] = afterTurn
 }
 
 func Begin() {
@@ -64,7 +59,7 @@ func Begin() {
 
 					// Check if more actions possible
 					if turnCaps[id] > 0 {
-						go onTurn()
+						go onTurn(id)
 					} else {
 						go EndTurn(id)
 					}
@@ -74,7 +69,7 @@ func Begin() {
 
 				capMu.Unlock()
 			} else {
-				go onTurn()
+				go onTurn(id)
 			}
 
 			queueMu.Unlock()
@@ -126,7 +121,7 @@ func ConsumeTurn(id entity.InstanceId, duration int, action func()) bool {
 func EndTurn(id entity.InstanceId) {
 	state, _ := entity.GetEntityState(id)
 	typeId := state.GetTypeId()
-	entity.AfterTurns[typeId]()
+	entity.AfterTurns[typeId](id)
 
 	capMu.Lock()
 	turnCaps[id] += TurnCap

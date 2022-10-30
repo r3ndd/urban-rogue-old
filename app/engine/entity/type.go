@@ -5,6 +5,7 @@ import (
 )
 
 type EntityClass int
+type TurnFunc func(InstanceId)
 
 type RegData struct {
 	Name        string
@@ -27,8 +28,8 @@ type RegData struct {
 		ActionId
 		Reaction
 	}
-	OnTurn    func()
-	AfterTurn func()
+	OnTurn    TurnFunc
+	AfterTurn TurnFunc
 }
 
 const (
@@ -55,8 +56,8 @@ var Classes = map[TypeId]EntityClass{}
 var InitStates = map[TypeId]EntityStateBase{}
 var Overlapables = map[TypeId]bool{}
 var ZIndexes = map[TypeId]byte{}
-var OnTurns = map[TypeId]func(){}
-var AfterTurns = map[TypeId]func(){}
+var OnTurns = map[TypeId]TurnFunc{}
+var AfterTurns = map[TypeId]TurnFunc{}
 
 func RegisterEntityType(
 	data *RegData,
@@ -152,10 +153,10 @@ func RegisterReactions(id TypeId, reactions []struct {
 	}
 }
 
-func RegisterOnTurn(id TypeId, onTurn func()) {
+func RegisterOnTurn(id TypeId, onTurn TurnFunc) {
 	OnTurns[id] = onTurn
 }
 
-func RegisterAfterTurn(id TypeId, afterTurn func()) {
+func RegisterAfterTurn(id TypeId, afterTurn TurnFunc) {
 	AfterTurns[id] = afterTurn
 }

@@ -8,11 +8,11 @@ import (
 
 type AgentState struct {
 	entity.EntityState
-	smState int
+	SmState int
 }
 
-func Spawn(typeId entity.TypeId, x, y int, onTurn, afterTurn func()) entity.InstanceId {
+func Spawn(typeId entity.TypeId, x, y int) entity.InstanceId {
 	instId, _ := world.CreateEntity(typeId, x, y, true)
-	turn.RegisterActor(instId, onTurn, afterTurn)
+	turn.RegisterActor(instId)
 	return instId
 }
